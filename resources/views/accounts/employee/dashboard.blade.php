@@ -1,3 +1,3 @@
-employee dashboard
-
-<x-button.logout />
+<x-layout.employeebody>
+    
+</x-layout.employeebody>

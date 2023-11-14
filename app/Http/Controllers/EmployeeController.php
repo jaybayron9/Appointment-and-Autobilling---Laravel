@@ -10,4 +10,7 @@ class EmployeeController extends Controller
         return view('accounts.employee.dashboard');
     }
 
+    public function job_order() {
+        return view('accounts.employee.joborder');
+    }
 }

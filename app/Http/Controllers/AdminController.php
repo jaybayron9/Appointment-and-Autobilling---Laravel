@@ -61,8 +61,34 @@ class AdminController extends Controller
         }
     }
 
-    public function assign_employee() {
+    public function assign_employee(Request $req) {
+        try {  
+            Appointment::find($req->app_id)->update([
+                'assigned_employee_id' => "{$req->mechanic}, {$req->electrician}"
+            ]);
 
+            return response()->json(['status' => 200]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'line' => $e->getLine() 
+            ]);
+        }
+    }
+
+    public function cancel_appointment($id) {
+        try {
+            Appointment::find($id)->update([
+                'appointment_status' => 'Cancelled'
+            ]);  
+
+            return response()->json(['status' => 200]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(), 
+                'line' => $e->getLine()]
+            );
+        }
     }
 
     public function add_employee(Request $req) {

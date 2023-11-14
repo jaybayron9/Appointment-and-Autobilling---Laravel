@@ -72,6 +72,7 @@
     <div id="assign-modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative w-full max-w-2xl max-h-full"> 
             <form id="assign-form" class="relative bg-white rounded-lg shadow"> 
+                {{ csrf_field() }}
                 <div class="flex items-start justify-between p-4 border-b rounded-t">
                     <h3 class="text-xl font-semibold text-gray-900">
                         Assign Employee
@@ -111,4 +112,51 @@
             </form>
         </div>
     </div>
+    <x-slot:scripts>
+        <script type="text/javascript">
+            var table = $('#table').DataTable({
+                responsive: true,
+                "lengthMenu": [10, 25, 50, 100, 1000],
+                "drawCallback": () => {  
+                    $('.cancel-btn').click(function() { 
+                        var id = $(this).data('row-data');
+                        swal({
+                            text: "Are you sure you want to cancel this appointment?",
+                            icon: "warning",
+                            buttons: ["No", "Yes"],
+                            dangerMode: true,
+                        }).then((cancel) => {
+                            if (cancel) {
+                                $.ajax({
+                                    url: `/admin/cancel_appointment/${id}`,
+                                    method: "POST", 
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    success: (res) => {
+                                        var tableRow = $('tr[data-row-id="'+ id +'"]'); 
+                                        table.row(tableRow).remove().draw(); 
+                                        dialog('border-green-600 text-green-700', 'Appointment successfully cancelled.');
+                                    }
+                                }); 
+                            }
+                        });
+                    });
+        
+                    $('.assign-btn').click(function() {
+                        let app_id = $(this).data('row-data');
+                        $('#app_id').val(app_id); 
+                    }) 
+                }
+            }).columns.adjust().responsive.recalc();
+        
+        
+            $('#assign-form').submit(function(e) {
+                e.preventDefault(); 
+                $.post("/admin/assign_employee", $(this).serialize(), (res) => { 
+                    window.location.reload(true);
+                }); 
+            });
+        </script>
+    </x-slot:scripts>
 </x-layout.adminbody>

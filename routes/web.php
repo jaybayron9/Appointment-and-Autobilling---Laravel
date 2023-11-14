@@ -27,10 +27,13 @@ Route::middleware(['auth', 'admin'])->controller(AdminController::class)->group(
     
     Route::post('/admin/update_appointment_status', 'update_appointment_status');
     Route::post('/admin/add_employee', 'add_employee');
+    Route::post('/admin/assign_employee', 'assign_employee');
+    Route::post('/admin/cancel_appointment/{id}', 'cancel_appointment');
 });
 
-Route::middleware(['auth', 'employee'])->group(function () {
-    Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.dashboard'); 
+Route::middleware(['auth', 'employee'])->controller(EmployeeController::class)->group(function () {
+    Route::get('/employee', 'index')->name('employee.dashboard');
+    ROute::get('/employee/job_order', 'job_order')->name('employee.job_order');
 });
 
 Route::middleware(['auth', 'customer'])->controller(CustomerController::class)->group(function () {

@@ -11,6 +11,7 @@
     {{ $slot }}
 
     <x-slot:scripts>
+        <script src="{{ asset('js/sidebar.js') }}"></script>
         <script src="{{ asset('js/alert.js') }}"></script>
         <script src="{{ asset('js/sweetalert.min.js') }}"></script> 
         <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>

@@ -29,11 +29,11 @@
                                     </td>
                                     <td class="text-sm"><?= date('F d, Y', strtotime($appointment->created_at)) ?></td>
                                     <td class="flex gap-x-2 justify-center text-sm"> 
-                                        <?php if ($appointment->appointment_status !== 'Cancelled') { ?>
-                                        <button data-row-data="<?= $appointment->id ?>" class="cancel-btn font-semibold bg-red-500 hover:bg-red-700 text-white px-2 rounded shadow-md">
-                                            Cancel
-                                        </button> 
-                                        <?php } ?>
+                                        @if ($appointment->appointment_status !== 'Cancelled')
+                                            <button data-row-data="<?= $appointment->id ?>" class="cancel-btn font-semibold bg-red-500 hover:bg-red-700 text-white px-2 rounded shadow-md">
+                                                Cancel
+                                            </button> 
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

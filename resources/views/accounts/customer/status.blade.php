@@ -12,31 +12,20 @@
                                 <th class="whitespace-nowrap text-xs text-center uppercase py-2 text-white">Status</th>
                             </tr>
                         </thead>
-                        {{-- <tbody id="tbody">
-                            <?php
-                            $query = "SELECT ap.id AS app_id, ap.*, cl.*, cs.*, sv.*, bh.*
-                                    FROM appointments ap
-                                    JOIN users cl ON cl.id = ap.user_id
-                                    JOIN cars cs ON cs.id = ap.car_id
-                                    JOIN services sv ON sv.id = ap.service_type_id
-                                    JOIN bussiness_hours bh ON bh.id = ap.service_time_id
-                                WHERE 
-                                    ap.user_id = '{$_SESSION['user_id']}' AND 
-                                    (ap.appointment_status = 'Underway')"; 
-                            foreach ($conn::DBQuery($query) as $progress) {
-                            ?>
+                        <tbody id="tbody"> 
+                            @foreach ($status as $stats) 
                                 <tr class="border-b border-gray-300 hover:bg-blue-100">
-                                    <td class="capitalize text-center text-sm py-2"><?= $progress['name'] ?></td>
-                                    <td class="capitalize text-center text-sm py-2"><?= $progress['plate_no'] ?></td>
-                                    <td class="capitalize text-center text-sm py-2"><?= $progress['category'] ?></td>
+                                    <td class="capitalize text-center text-sm py-2">{{ $stats->name }}</td>
+                                    <td class="capitalize text-center text-sm py-2">{{ $stats->plate_number }}</td>
+                                    <td class="capitalize text-center text-sm py-2">{{ $stats->category }}</td>
                                     <td class="capitalize text-center text-sm">
-                                        <span class="text-white rounded-md px-2 <?= $progress['appointment_status'] == 'Underway' ? 'bg-sky-500' : 'bg-green-500';  ?>">
-                                            <?= $progress['appointment_status'] ?>
+                                        <span class="text-white rounded-md px-2 {{ $stats->appointment_status == 'Underway' ? 'bg-sky-500' : 'bg-green-500' }}">
+                                            {{ $stats->appointment_status }} 
                                         </span>
                                     </td>
                                 </tr>
-                            <?php } ?>
-                        </tbody> --}}
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>

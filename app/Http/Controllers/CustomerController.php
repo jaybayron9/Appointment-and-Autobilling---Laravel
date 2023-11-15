@@ -19,7 +19,7 @@ class CustomerController extends Controller
     }
 
     public function appointments() {  
-        $appoinments = DB::select("CALL GetCustomerAppointments(?)", [
+        $appoinments = DB::select("CALL get_customer_appointments(?)", [
             Auth::user()->id
         ]);
 
@@ -29,11 +29,23 @@ class CustomerController extends Controller
     }
 
     public function status() {
-        return view("accounts.customer.status");
+        $status = DB::select('CALL show_appointment_status(?)', [
+            Auth::user()->id
+        ]);
+
+        return view("accounts.customer.status", [
+            'status' => $status
+        ]);
     }
 
     public function history() {
-        return view("accounts.customer.history");
+        $histories = DB::select("CALL show_user_history(?)", [
+            Auth::user()->id
+        ]);
+
+        return view("accounts.customer.history", [
+            'histories' => $histories
+        ]);
     }
 
     public function cars() {
@@ -58,10 +70,14 @@ class CustomerController extends Controller
                 'service_time_id' => $req->time
             ]);
 
-            BookingSummary::create([
+            $bookingSummary = BookingSummary::create([
                 'user_id' => Auth::user()->id,
                 'car_id' => $req->car_id,
                 'appointment_id' => $appointment->id
+            ]); 
+
+            Appointment::where('id', $appointment->id)->update([
+                'book_summary_id' =>  $bookingSummary->id
             ]); 
         } catch (\Exception $e) {
             return response()->json([

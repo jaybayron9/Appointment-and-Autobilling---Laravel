@@ -21,7 +21,7 @@ class AdminController extends Controller
     }
 
     public function pendings() {
-        $pendings = DB::table('appointmentpendingview')->get();
+        $pendings = DB::table('appointment_pending_view')->get();
 
         return view('accounts.admin.pendings', [
             'pendings' => $pendings
@@ -29,14 +29,35 @@ class AdminController extends Controller
     }
 
     public function confirmed() {
-        $confirmedAppointments = DB::table('appointmentconfirmedview')->get();
-        $employee = fn($position) => Employee::where(['position' => $position, 'status' => 'employed'])->get();
+        $confirmedAppointments = DB::table('appointment_confirmed_view')->get();
+        $employee = function($position) {
+            Employee::where([
+                'position' => $position, 
+                'status' => 'employed'
+            ])->get();
+        };
     
         return view('accounts.admin.confirmed', [
             'appointments' => $confirmedAppointments,
             'employee' => $employee
         ]);
     } 
+
+    public function transactions() {
+        $transactions = DB::table('show_transations_view')->get();
+
+        return view('accounts.admin.transaction', [
+            'transactions' => $transactions
+        ]);
+    }
+
+    public function history() {
+        $histories = DB::table('appointment_history_view')->get();
+
+        return view('accounts.admin.history', [
+            'histories' => $histories
+        ]);
+    }
 
     public function employees() {
         $employees = Employee::all();
@@ -91,6 +112,21 @@ class AdminController extends Controller
         }
     }
 
+    public function update_payment_status(Request $req) {
+        try {
+            Appointment::find($req->id)->update([
+                'payment_status' => $req->status
+            ]);
+
+            return response()->json(['status' => 200]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'line' => $e->getLine() 
+            ]);
+        }
+    }
+
     public function add_employee(Request $req) {
         try {
             $validator = Validator::make($req->all(), [
@@ -131,7 +167,8 @@ class AdminController extends Controller
                 'date_started' => $req->date_started
             ]);
 
-            $account = User::create([
+            User::create([
+                'employee_id' => $employee->id,
                 'name' => $req->name,
                 'email' => $req->email,
                 'phone' => $req->phone,

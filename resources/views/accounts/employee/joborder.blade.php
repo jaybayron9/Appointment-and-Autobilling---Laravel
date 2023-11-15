@@ -14,51 +14,38 @@
                                 <th data-priority="2" class="whitespace-nowrap text-xs text-center uppercase text-white">Status (Action)</th>
                             </tr>
                         </thead>
-                        {{-- <tbody id="tbody">
-                            <?php 
-                            $query = "SELECT ap.id as app_id, ap.*, cs.*, sv.*, bh.*, us.*
-                                        FROM appointments ap 
-                                        JOIN cars cs ON ap.car_id = cs.id
-                                        JOIN services sv ON sv.id = ap.service_type_id
-                                        JOIN bussiness_hours bh ON bh.id = ap.service_time_id
-                                        JOIN users us ON us.id = ap.user_id
-                                    WHERE  
-                                        ap.appointment_status <> 'Done' AND 
-                                        ap.appointment_status <> 'Pending' AND 
-                                        ap.appointment_status <> 'Cancelled'";
-    
-                            foreach ($conn::DBQuery($query) as $app) {
-                                $emp = explode(', ', $app['assigned_employee_id']);
-    
-                                for ($i = 0; $i < count($emp); $i++) {
-                                    if ($emp[$i] == $_SESSION['support_id']) {
-                            ?>
-                                        <tr data-row-id="<?= $app['app_id'] ?>">
-                                            <td class="text-sm capitalize"><?= $app['name'] ?></td>
-                                            <td class="text-sm"><?= $app['plate_no'] ?></td>
+                        <tbody id="tbody">
+                            @foreach ($appointments as $appointment)
+                                @php $emp = explode(', ', $appointment->assigned_employee_id); @endphp
+
+                                @for ($i = 0; $i < count($emp); $i++)
+                                    @if ($emp[$i] == auth()->user()->employee_id)
+                                        <tr data-row-id="{{ $appointment->id }}">
+                                            <td class="text-sm capitalize">{{ $appointment->name }}</td>
+                                            <td class="text-sm">{{ $appointment->plate_number }}</td>
                                             <td class="flex justify-center gap-x-3">
-                                                <select data-row-data="<?= "{$app['app_id']}~{$app['user_id']}~{$app['car_id']}" ?>" class="service-col hover:cursor-pointer" style="height: 33px; padding-top: 3px; padding-right: 35px;">
-                                                    <option value="<?= $app['category'] ?>" selected hidden><?= $app['category'] ?></option>
-                                                    <?php foreach($conn::select("services") as $serv ) { ?>
-                                                    <option value="<?= $serv['category'] ?>"><?= $serv['category'] ?></option>
-                                                    <?php } ?> 
+                                                <select data-row-data="{{ "{$appointment->id}~{$appointment->user_id}~{$appointment->car_id}" }}" class="service-col hover:cursor-pointer" style="height: 33px; padding-top: 3px; padding-right: 35px;">
+                                                    <option value="{{ $appointment->category }} " selected hidden>{{ $appointment->category }}</option>
+                                                    @foreach($services as $serv )
+                                                        <option value="{{ $serv->category }}">{{ $serv->category }}</option>
+                                                    @endforeach
                                                 </select>
                                             </td> 
-                                            <td class="text-sm"><?= date('F d, Y', strtotime($app['schedule_date'])) ?></td>
-                                            <td class="text-sm"><?= $app['available_time'] ?></td>
+                                            <td class="text-sm"><?= date('F d, Y', strtotime($appointment->schedule_date)) ?></td>
+                                            <td class="text-sm"><?= $appointment->available_time ?></td>
                                             <td class="flex justify-center">
-                                                <select data-row-data="<?= $app['app_id'] ?>" class="status-select" style="height: 33px; padding-top: 3px; padding-right: 35px;">
-                                                    <option value="" selected hidden><?= $app['appointment_status'] ?></option>
+                                                <select data-row-data="<?= $appointment->id ?>" class="status-select" style="height: 33px; padding-top: 3px; padding-right: 35px;">
+                                                    <option value="" selected hidden><?= $appointment->appointment_status ?></option>
                                                     <option value="Underway">Underway</option>
                                                     <option value="Done">Done</option>
                                                     <option value="Cancelled">Cancel</option>
                                                 </select>
                                             </td>
                                         </tr>
-                            <?php }
-                                }
-                            } ?>
-                        </tbody> --}}
+                                    @endif
+                                @endfor
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -76,15 +63,19 @@
                         var status = $(this).val();
                         $.ajax({
                             type: "POST",
-                            url: "?admin_rq=appointment_status",
+                            url: "/employee/update_appointment_status",
                             data: {
                                 id: id,
                                 status: status
                             },
-                            success: function(resp) {
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') 
+                            },
+                            success: (res) => {
+                                console.log(res);
                                 var tableRow = $('tr[data-row-id="'+ id +'"]');  
                                 
-                                if (status == "Done" || "Cancelled") {
+                                if (status === "Confirmed" || status === "Cancelled" || status === "Done") {
                                     table.row(tableRow).remove().draw();
                                 }
                                 
@@ -97,14 +88,14 @@
                         var val = $(this).val();
                         let ids = $(this).data('row-data');
                         let data = ids.split('~');
-                        window.location.replace(`?vs=_sup/service&serv=${val.toLowerCase()}&app_id=${data[0]}&user_id=${data[1]}&car_id=${data[2]}`);
+                        window.location.replace(`/employee/estimator?serv=${val.toLowerCase()}&app_id=${data[0]}&user_id=${data[1]}&car_id=${data[2]}`);
                     });
         
                     $('.service-col').change(function() {
                         var val = $(this).val();
                         let ids = $(this).data('row-data');
                         let data = ids.split('~');
-                        window.location.replace(`?vs=_sup/service&serv=${val.toLowerCase()}&app_id=${data[0]}&user_id=${data[1]}&car_id=${data[2]}`);
+                        window.location.replace(`/employee/estimator?serv=${val.toLowerCase()}&app_id=${data[0]}&user_id=${data[1]}&car_id=${data[2]}`);
                     }); 
                 }
             }).columns.adjust().responsive.recalc();

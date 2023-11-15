@@ -34,11 +34,19 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="?vs=_admin/transact" class="{{ Route::currentRouteName() === 'admin'  ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ Route::currentRouteName() === 'admin'  ? 'text-gray-900' : 'text-gray-500' }} group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <a href="/admin/transactions" class="{{ Route::currentRouteName() === 'admin.transactions'  ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ Route::currentRouteName() === 'admin.transactions'  ? 'text-gray-900' : 'text-gray-500' }} group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             <span class="ml-3">Transactions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/history" class="{{ Route::currentRouteName() === 'admin.history'  ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ Route::currentRouteName() === 'admin.history'  ? 'text-gray-900' : 'text-gray-500' }} group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="ml-3">History</span>
                         </a>
                     </li>
                     <li>
@@ -51,15 +59,7 @@
                             </svg> 
                             <span class="ml-3">Products</span>
                         </a>
-                    </li> 
-                    <li>
-                        <a href="?vs=_admin/serv_his" class="{{ Route::currentRouteName() === 'admin'  ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ Route::currentRouteName() === 'admin'  ? 'text-gray-900' : 'text-gray-500' }} group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span class="ml-3">Service History</span>
-                        </a>
-                    </li>
+                    </li>  
                     <li>
                         <a href="?vs=_admin/inbox" class="{{ Route::currentRouteName() === 'admin'  ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-2 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ Route::currentRouteName() === 'admin'  ? 'text-gray-900' : 'text-gray-500' }} group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -87,3 +87,5 @@
         </div>
     </div>
 </aside>
+
+<div class="fixed inset-0 z-10 hidden bg-gray-900/50" id="sidebarBackdrop"></div>

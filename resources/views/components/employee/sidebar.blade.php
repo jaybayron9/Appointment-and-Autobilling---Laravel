@@ -13,23 +13,23 @@
                     </li>
                     <li>
                         <a href="/employee/job_order" class="{{ Route::currentRouteName() === 'employee.job_order' ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-4 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ Route::currentRouteName() === 'admin.employees' ? 'text-gray-900' : 'text-gray-500' }}   group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ Route::currentRouteName() === 'employee.job_order' ? 'text-gray-900' : 'text-gray-500' }}   group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                             <span class="ml-3">Job Order</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?vs=_sup/serv_his" class="{{ Route::currentRouteName() === 'admin.employees' ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-4 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ Route::currentRouteName() === 'admin.employees' ? 'text-gray-900' : 'text-gray-500' }}   group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <a href="/employee/history" class="{{ Route::currentRouteName() === 'employee.history' ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-4 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ Route::currentRouteName() === 'employee.history' ? 'text-gray-900' : 'text-gray-500' }}   group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span class="ml-3">Service History</span>
                         </a>
                     </li>
                     <li>
-                        <a href="?vs=_sup/service" class="{{ Route::currentRouteName() === 'admin.employees' ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-4 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ Route::currentRouteName() === 'admin.employees' ? 'text-gray-900' : 'text-gray-500' }}   group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <a href="/employee/estimator" class="{{ Route::currentRouteName() === 'employee.estimator' ? 'bg-gray-100 shadow border border-gray-300' : '' }} flex items-center p-4 text-gray-700 hover:bg-gray-100 rounded-md group font-semibold text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ Route::currentRouteName() === 'employee.estimator' ? 'text-gray-900' : 'text-gray-500' }}   group-hover:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
                             <span class="ml-3">Estimator</span>
@@ -41,4 +41,4 @@
     </div>
 </aside>
 
-<div class="fixed inset-0 z-10 hidden bg-gray-900/50 dark:bg-gray-900/90" id="sidebarBackdrop"></div>
+<div class="fixed inset-0 z-10 hidden bg-gray-900/50" id="sidebarBackdrop"></div>

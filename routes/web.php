@@ -26,6 +26,7 @@ Route::middleware(['auth', 'admin'])->controller(AdminController::class)->group(
     Route::get('/admin/pendings', 'pendings')->name('admin.pendings');
     Route::get('/admin/confirmed', 'confirmed')->name('admin.confirmed');
     Route::get('/admin/employees', 'employees')->name('admin.employees');
+    Route::get('/admin/walkin', 'walkin')->name('admin.walkin');
     Route::get('/admin/transactions', 'transactions')->name('admin.transactions');
     Route::get('/admin/history', 'history')->name('admin.history');
     
@@ -34,6 +35,11 @@ Route::middleware(['auth', 'admin'])->controller(AdminController::class)->group(
     Route::post('/admin/assign_employee', 'assign_employee');
     Route::post('/admin/cancel_appointment/{id}', 'cancel_appointment'); 
     Route::post('/admin/update_payment_status', 'update_payment_status');
+    Route::post('/admin/get_total_sales', 'get_total_sales');
+    Route::post('/admin/add_walkin', 'add_walkin');
+    Route::post('/admin/cancel_walkin', 'cancel_walkin');
+    Route::get('/admin/get_unpaid_walkins', 'show_unpaid_walkins');
+    Route::post('/admin/add_walkin_payment', 'add_walkin_payment');
 });
 
 Route::middleware(['auth', 'employee'])->controller(EmployeeController::class)->group(function () {

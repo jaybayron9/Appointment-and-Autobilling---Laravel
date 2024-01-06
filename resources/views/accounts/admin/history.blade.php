@@ -2,10 +2,24 @@
     <main id="main-content" class="relative h-full overflow-y-auto lg:ml-64">
         <div class="px-4 h-full my-[80px]">
             <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white"> 
-                <div>
-                    <p class="mt-1">
-                        Total Sale:  &#8369; <span id="total-sale"></span>
-                    </p>
+                <div class="grid grid-cols-2 mb-5 sm:grid-cols-6">
+                    <div class="col-span-4 gap-x-3 block md:flex">
+                        <div class="flex items-center -ml-2 sm:ml-0">
+                            <span class="mx-1 text-gray-500">From</span>
+                            <div class="relative">
+                                <input name="start" type="date" id="start" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2" placeholder="Select date start">
+                            </div>
+                            <span class="mx-1 text-gray-500">To</span>
+                            <div class="relative">
+                                <input name="end" type="date" id="end" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2" placeholder="Select date end">
+                            </div>
+                        </div> 
+                        <div>
+                            <p class="mt-1">
+                                Total Sales:  &#8369; <span id="total-sale"></span>
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <div class="overflow-x-auto overflow-y-auto p-1" style=" max-height: 700px;">
                     <table id="table" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
@@ -26,7 +40,7 @@
                                     <td class="text-sm">{{ $history->category }}</td> 
                                     <td class="text-sm">{{ date('F d, Y', strtotime($history->schedule_date)) }}</td>
                                     <td class="text-sm">{{ $history->available_time }}</td> 
-                                    <td class="text-sm">{{ date('F d, Y', strtotime($history->created_at)) }}</td>
+                                    <td class="text-sm">{{ date('Y-m-d', strtotime($history->created_at)) }}</td>
                                     <td class="flex justify-center">
                                         <button data-row-data="{{ $history->id }}" data-modal-target="view-summary" data-modal-toggle="view-summary" class="book-summary-btn btn shadow-inner shadow-zinc-400 rounded-full p-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -36,32 +50,17 @@
                                         </button>
                                     </td> 
                                 </tr>
-                            @endforeach
-                            {{-- <?php
-                            $query = "SELECT wk.id as app_id, wk.created_at as walkin_created_at, wk.*, sv.*, bh.*
-                            FROM walkin wk 
-                            JOIN services sv ON sv.id = wk.service_id
-                            JOIN bussiness_hours bh ON bh.id = wk.service_time_id
-                            WHERE payment_status = 'Paid'";
-
-                            foreach ($conn::DBQuery($query) as $app) {
-                            ?>
+                            @endforeach  
+                            @foreach ($walkins as $walkin)
                                 <tr>
-                                    <td class="text-sm"><?= $app['plate_no'] ?></td>
-                                    <td class="text-sm"><?= $app['category'] ?></td> 
-                                    <td class="text-sm"><?= date('F d, Y', strtotime($app['schedule_date'])) ?></td>
-                                    <td class="text-sm"><?= $app['available_time'] ?></td>
-                                    <!-- <td class="text-sm text-center">
-                                        <span class="text-white rounded-md px-2 <?= $app['payment_status'] == 'Unpaid' ? 'bg-gray-500' : 'bg-green-500';  ?>">
-                                            <?= $app['payment_status'] ?>
-                                        </span> 
-                                    </td> -->
-                                    <td class="text-sm"><?= date('F d, Y', strtotime($app['walkin_created_at'])) ?></td>
-                                    <td class="flex justify-center">
-                                        
-                                    </td> 
+                                    <td class="text-sm">{{ $walkin->plate_no }}</td>
+                                    <td class="text-sm">{{ $walkin->category }}</td> 
+                                    <td class="text-sm">{{ date('F d, Y', strtotime($walkin->schedule_date)) }}</td>
+                                    <td class="text-sm">{{ $walkin->available_time }}</td> 
+                                    <td class="text-sm">{{ date('Y-m-d', strtotime($walkin->walkin_created_at)) }}</td>
+                                    <td class="flex justify-center"></td> 
                                 </tr>
-                            <?php } ?> --}}
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -160,8 +159,8 @@
                                 var name = $('#name').text(res[0].name);
                                 var email = $('#email').text(res[0].email);
                                 var phone = $('#contact-no').text(res[0].phone);
-                                var brand = $('#brand').text(res[0].car_brand);
-                                var model = $('#model').text(res[0].car_model);
+                                var brand = $('#brand').text(res[0].brand);
+                                var model = $('#model').text(res[0].model);
                                 var date = $('#schedule-date').text(res[0].schedule_date);
                                 var time = $('#service-time').text(res[0].available_time);
                                 var quantity = $('#quantity').text(res[0].quantity);
@@ -208,11 +207,53 @@
                 }
             }).columns.adjust().responsive.recalc(); 
 
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    var minDate = $('#start').val();
+                    var maxDate = $('#end').val();
+                    var date = data[4];
+                    if (minDate === '' || maxDate === '') { return true; }
+                    if (date >= minDate && date <= maxDate) { return true; }
+                    return false;
+                }
+            );
+
+            $('#start, #end').on('change', function(){
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/get_total_sales",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }, 
+                    data: {
+                        'start_date': $('#start').val(),
+                        'end_date': $('#end').val()
+                    },
+                    dataType: 'json',
+                    success: (res) => {
+                        console.log(res)
+                        const sales = (res[0].total_sale !== null) 
+                                    ? res[0].total_sale.toLocaleString() 
+                                    : '0.00';
+                        $('#total-sale').text(sales);
+                    }
+                });
+
+                table.draw(); 
+            }); 
+
             $.ajax({
-                url: '?admin_rq=total_sale',
-                method: 'GET', 
-                success: function(res) {  
-                    $('#total-sale').text(res.total);
+                url: '/admin/get_total_sales',
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }, 
+                success: (res) => {  
+                    console.log(res)
+                    const sales = (res[0].total_sale !== null) 
+                                    ? res[0].total_sale.toLocaleString() 
+                                    : '0.00';
+                        $('#total-sale').html(sales);
                 }
             }); 
         </script>

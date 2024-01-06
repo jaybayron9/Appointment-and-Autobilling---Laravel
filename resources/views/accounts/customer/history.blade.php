@@ -137,8 +137,8 @@
 								var name = $('#name').text(res[0].name);
 								var email = $('#email').text(res[0].email);
 								var phone = $('#contact-no').text(res[0].phone);
-								var brand = $('#brand').text(res[0].car_brand);
-								var model = $('#model').text(res[0].car_model);
+								var brand = $('#brand').text(res[0].brand);
+								var model = $('#model').text(res[0].model);
 								var date = $('#schedule-date').text(res[0].schedule_date);
 								var time = $('#service-time').text(res[0].available_time);
 								var quantity = $('#quantity').text(res[0].quantity);

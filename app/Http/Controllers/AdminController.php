@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookingSummary;
 use App\Models\User;
+use App\Models\Walkin;
+use App\Models\Payment;
+use App\Models\Service;
 use App\Models\Employee;
 use App\Rules\NumberRule;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use App\Models\bussiness_hour;
 use App\Rules\LowercaseLetterRule;
 use App\Rules\UppercaseLetterRule;
 use Illuminate\Support\Facades\DB;
@@ -30,18 +35,33 @@ class AdminController extends Controller
 
     public function confirmed() {
         $confirmedAppointments = DB::table('appointment_confirmed_view')->get();
-        $employee = function($position) {
-            Employee::where([
-                'position' => $position, 
-                'status' => 'employed'
-            ])->get();
-        };
-    
+        $employee = fn($position) 
+                    => Employee::where([
+                        'position' => $position, 
+                        'status' => 'employed'
+                    ])->get(); 
+
         return view('accounts.admin.confirmed', [
             'appointments' => $confirmedAppointments,
             'employee' => $employee
         ]);
     } 
+
+    public function walkin() {
+        $walkins = DB::table("walkins as wk")
+                    ->leftJoin('services as sv', 'sv.id', '=', 'wk.service_id')
+                    ->leftJoin('bussiness_hours as bh', 'bh.id', '=', 'wk.service_time_id')
+                    ->select("wk.id", "wk.name", "wk.phone", "wk.address", "sv.category", "wk.plate_no", "wk.brand", "wk.model", "wk.schedule_date", "bh.available_time", "wk.payment_status")
+                    ->get();
+        $services = Service::all();
+        $bussiness_hours = bussiness_hour::all();
+
+        return view('accounts.admin.walkin', [
+            'walkins' => $walkins,
+            'services' => $services,
+            'bussiness_hours' => $bussiness_hours
+        ]);
+    }
 
     public function transactions() {
         $transactions = DB::table('show_transations_view')->get();
@@ -53,9 +73,16 @@ class AdminController extends Controller
 
     public function history() {
         $histories = DB::table('appointment_history_view')->get();
+        $walkins = DB::table('walkins as wk')
+                    ->leftJoin('services as sv', 'sv.id', '=', 'wk.service_id')
+                    ->leftJoin('bussiness_hours as bh', 'bh.id', '=', 'wk.service_time_id')
+                    ->select("wk.schedule_date", "wk.plate_no", "sv.category", "wk.schedule_date", "bh.available_time", "wk.created_at as walkin_created_at")
+                    ->where('payment_status', 'Paid')
+                    ->get();
 
         return view('accounts.admin.history', [
-            'histories' => $histories
+            'histories' => $histories,
+            'walkins' => $walkins
         ]);
     }
 
@@ -123,6 +150,107 @@ class AdminController extends Controller
             return response()->json([
                 'error' => $e->getMessage(),
                 'line' => $e->getLine() 
+            ]);
+        }
+    }
+
+    public function get_total_sales(Request $req) {
+        try {
+            $total = DB::table('payments')
+                        ->whereBetween("created_at", [
+                                        $req->start_date ?? date('Y-m-d'),
+                                        $req->end_date ?? date('Y-m-d')
+                                    ]) 
+                        ->select(DB::raw('SUM(total_due) as total_sale'))
+                        ->get();
+
+            return response()->json($total);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 400,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine()
+            ]);
+        }
+    }
+
+    public function add_walkin(Request $req) {
+        try {
+            Walkin::create([
+                'name' => $req->name, 
+                'phone' => $req->phone,
+                'address' => $req->address,
+                'plate_no' => $req->plate_no,
+                'service_id' => $req->service,
+                'brand' => $req->brand,
+                'model' => $req->model,
+                'schedule_date' => $req->schedule,
+                'service_time_id' =>$req->time
+            ]);
+
+            return response()->json(['status' => 200]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 400,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine()
+            ]);
+        }
+    }
+
+    public function show_unpaid_walkins() {
+        try {
+            $walkin = Walkin::where('payment_status', 'Unpaid')->select('*')->get();
+
+            return response()->json($walkin);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 400,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine()
+            ]);
+        }
+    }
+
+    public function add_walkin_payment(Request $req) {
+        try {
+            $data = explode(' | ', $req->name); 
+            $id = count($data) == 3 ? true : false; 
+
+            $walkin = Walkin::find($data[0])->get();
+
+            Payment::create([
+                'name' => $walkin[0]['name'],
+                'email' => $walkin[0]['email'],
+                'phone' => $walkin[0]['phone'],
+                'description' => "(Walkin) $req->description",
+                'total_due' => $req->amount
+            ]);
+
+            Walkin::find($data[0])->update([
+                'payment_status' => 'Paid',
+            ]);
+
+            return response()->json(['status' => 200]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 400,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine()
+        ]);
+    }
+    }
+
+    public function cancel_walkin(Request $req) {
+        try {
+            Walkin::find($req->id)->delete();
+
+            return response()->json(['status' => 200]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 400,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine()
             ]);
         }
     }

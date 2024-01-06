@@ -22,7 +22,8 @@ class WelcomeController extends Controller
 
             return response()->json([
                 'estimator' => $estimator, 
-                'inclusions' => $inclusions]); 
+                'inclusions' => $inclusions
+            ]); 
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage(),
